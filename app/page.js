@@ -4,14 +4,17 @@ import { PincodeChecker } from '@/actions/pin.actions';
 export default function Home() {
   const [pincode, setPincode] = useState('');
   const [message, setMessage] = useState();
-
+  const [response, setResponse] = useState();
+  const etd = message?.data?.available_courier_companies[0].etd;
   const handleCheckPincode = async () => {
     setMessage(' ');
     const response = await PincodeChecker(pincode);
     if (response.success) {
       setMessage(response.data);
+      setResponse(response.data.available_courier_companies);
     }
   };
+
   return (
     <>
       {/* <h1 className="text-center mb-2 mt-2 font-bold text-2xl">Home</h1> */}
@@ -33,13 +36,18 @@ export default function Home() {
       </div>
       <div className="flex justify-center mt-10">
         {' '}
-        {message && message.status === 200
-          ? `COD is available for ${pincode}`
-          : message && message.status === 404
-          ? `COD Not Available`
-          : message && message.status_code === 422
-          ? `Invalid Pin code`
-          : ``}
+        {message && message.status === 200 ? (
+          <div>
+            <span className="flex">COD is available for {pincode}</span>
+            <span className="flex">Expected Delivery By: {etd}</span>
+          </div>
+        ) : message && message.status === 404 ? (
+          `COD Not Available`
+        ) : message && message.status_code === 422 ? (
+          `Invalid Pin code`
+        ) : (
+          ``
+        )}
       </div>
 
       {/* {JSON.stringify(
